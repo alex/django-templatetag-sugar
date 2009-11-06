@@ -1,0 +1,4 @@
+django-kickass-templatetags
+===========================
+
+A library to make writing templatetags in Django kick ass.
