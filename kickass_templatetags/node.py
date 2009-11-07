@@ -16,4 +16,4 @@ class KickassNode(Node):
             else:
                 kwargs[name] = value
         
-        return self.function(context, args, kwargs)
+        return self.function(context, *args, **kwargs)

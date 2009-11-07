@@ -7,10 +7,9 @@ register = template.Library()
 
 
 @tag(register, [Constant("for"), Variable(), Optional([Constant("as"), Name()])])
-def test_tag_1(context, args, kwargs):
-    val = args[0]
-    if len(args) == 2:
-        context[args[1]] = val
+def test_tag_1(context, val, asvar=None):
+    if asvar:
+        context[asvar] = val
         return ""
     else:
         return val
