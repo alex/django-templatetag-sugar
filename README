@@ -2,3 +2,16 @@ django-kickass-templatetags
 ===========================
 
 A library to make writing templatetags in Django kick ass.
+
+Here's an example of using::
+
+    @tag(register, [Constant("for"), Variable(), Optional([Constant("as"), Variable()])]):
+    def example_tag(context, val, asvar=None):
+        if asvar:
+            context[asvar] = val
+            return ""
+        else:
+            return val
+
+
+As you can see it makes it super simple to define the syntax for a tag.
