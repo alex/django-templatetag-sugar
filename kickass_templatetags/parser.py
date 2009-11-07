@@ -75,6 +75,8 @@ class Optional(Parsable):
     
     def parse(self, parser, bits):
         result = []
+        # we make a copy so that if part way through the optional part it
+        # doesn't match no changes are made
         bits_copy = copy(bits)
         for part in self.syntax:
             try:
@@ -84,6 +86,7 @@ class Optional(Parsable):
                 result.extend(val)
             except TemplateSyntaxError:
                 return None
+        # however many bits we popped off our copy pop off the real one
         diff = len(bits) - len(bits_copy)
         for _ in xrange(diff):
             bits.popleft()
