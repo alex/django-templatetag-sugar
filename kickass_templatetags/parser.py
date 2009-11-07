@@ -1,6 +1,7 @@
 from collections import deque
 from copy import copy
 
+from django.db.models.loading import cache
 from django.template import TemplateSyntaxError
 
 from kickass_templatetags.node import KickassNode
@@ -29,12 +30,16 @@ class Parser(object):
 
 
 class Parsable(object):
-    pass
+    def resolve(self, context, value):
+        return value
+
+class NamedParsable(Parsable):
+    def __init__(self, name=None):
+        self.name = name
 
 class Constant(Parsable):
     def __init__(self, text):
         self.text = text
-        super(Constant, self).__init__()
     
     def parse(self, parser, bits):
         if not bits:
@@ -45,10 +50,7 @@ class Constant(Parsable):
         raise TemplateSyntaxError("%s expected, %s found" % (self.text, bits[0]))
 
 
-class Variable(Parsable):
-    def __init__(self, name=None):
-        self.name = name
-    
+class Variable(NamedParsable):
     def parse(self, parser, bits):
         bit = bits.popleft()
         val = parser.compile_filter(bit)
@@ -57,16 +59,10 @@ class Variable(Parsable):
     def resolve(self, context, value):
         return value.resolve(context)
 
-class Name(Parsable):
-    def __init__(self, name=None):
-        self.name = name
-    
+class Name(NamedParsable):
     def parse(self, parser, bits):
         bit = bits.popleft()
         return [(self, self.name, bit)]
-    
-    def resolve(self, context, value):
-        return value
 
 
 class Optional(Parsable):
@@ -91,3 +87,10 @@ class Optional(Parsable):
         for _ in xrange(diff):
             bits.popleft()
         return result
+
+
+class Model(NamedParsable):
+    def parse(self, parser, bits):
+        bit = bits.popleft()
+        app, model = bit.split(".")
+        return [(self, self.name, cache.get_model(app, model))]
