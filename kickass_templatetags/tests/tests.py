@@ -11,3 +11,7 @@ class KickassTestCase(TestCase):
         context = Context()
         tmpl.render(context)
         self.assertEqual(context["name"], "brian")
+        
+        tmpl = Template("""{% load test_tags %}{% test_tag_1 for variable %}""")
+        context = Context({"variable": [1, 2, 3]})
+        self.assertEqual(tmpl.render(context), "[1, 2, 3]")
