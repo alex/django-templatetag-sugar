@@ -3,17 +3,17 @@ from django.template import Node
 
 class KickassNode(Node):
     def __init__(self, pieces, function):
-        self.pieces = pices
+        self.pieces = pieces
         self.function = function
     
     def render(self, context):
         args = []
         kwargs = {}
-        for part, (name, value) in self.pieces:
-            value = part.resolve(value)
+        for part, name, value in self.pieces:
+            value = part.resolve(context, value)
             if name is None:
                 args.append(value)
             else:
                 kwargs[name] = value
         
-        return self.function(args, kwargs, context)
+        return self.function(context, args, kwargs)

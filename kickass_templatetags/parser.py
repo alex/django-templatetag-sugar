@@ -1,6 +1,9 @@
 from collections import deque
+from copy import copy
 
 from django.template import TemplateSyntaxError
+
+from kickass_templatetags.node import KickassNode
 
 
 class Parser(object):
@@ -19,10 +22,10 @@ class Parser(object):
             result = part.parse(parser, bits)
             if result is None:
                 continue
-            pieces.append((part, result))
+            pieces.extend(result)
         if bits:
             raise TemplateSyntaxError("You didn't eat all the bits")
-        return KickassNode(args, kwargs, self.function)
+        return KickassNode(pieces, self.function)
 
 
 class Parsable(object):
@@ -34,6 +37,8 @@ class Constant(Parsable):
         super(Constant, self).__init__()
     
     def parse(self, parser, bits):
+        if not bits:
+            raise TemplateSyntaxError
         if bits[0] == self.text:
             bits.popleft()
             return None
@@ -47,7 +52,7 @@ class Variable(Parsable):
     def parse(self, parser, bits):
         bit = bits.popleft()
         val = parser.compile_filter(bit)
-        return (self.name, val)
+        return [(self, self.name, val)]
     
     def resolve(self, context, value):
         return value.resolve(context)
@@ -56,9 +61,30 @@ class Name(Parsable):
     def __init__(self, name=None):
         self.name = name
     
-    def parser(self, parser, bits):
+    def parse(self, parser, bits):
         bit = bits.popleft()
-        return (self.name, bit)
+        return [(self, self.name, bit)]
     
     def resolve(self, context, value):
         return value
+
+
+class Optional(Parsable):
+    def __init__(self, syntax):
+        self.syntax = syntax
+    
+    def parse(self, parser, bits):
+        result = []
+        bits_copy = copy(bits)
+        for part in self.syntax:
+            try:
+                val = part.parse(parser, bits_copy)
+                if val is None:
+                    continue
+                result.extend(val)
+            except TemplateSyntaxError:
+                return None
+        diff = len(bits) - len(bits_copy)
+        for _ in xrange(diff):
+            bits.popleft()
+        return result
