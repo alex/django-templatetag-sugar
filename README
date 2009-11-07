@@ -5,7 +5,7 @@ A library to make writing templatetags in Django kick ass.
 
 Here's an example of using::
 
-    @tag(register, [Constant("for"), Variable(), Optional([Constant("as"), Variable()])]):
+    @tag(register, [Constant("for"), Variable(), Optional([Constant("as"), Name()])]):
     def example_tag(context, val, asvar=None):
         if asvar:
             context[asvar] = val
