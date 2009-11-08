@@ -80,7 +80,7 @@ class Optional(Parsable):
                 if val is None:
                     continue
                 result.extend(val)
-            except TemplateSyntaxError:
+            except (TemplateSyntaxError, IndexError):
                 return None
         # however many bits we popped off our copy pop off the real one
         diff = len(bits) - len(bits_copy)
