@@ -4,7 +4,7 @@ from copy import copy
 from django.db.models.loading import cache
 from django.template import TemplateSyntaxError
 
-from kickass_templatetags.node import KickassNode
+from templatetag_sugar.node import SugarNode
 
 
 class Parser(object):
@@ -26,7 +26,7 @@ class Parser(object):
             pieces.extend(result)
         if bits:
             raise TemplateSyntaxError("You didn't eat all the bits")
-        return KickassNode(pieces, self.function)
+        return SugarNode(pieces, self.function)
 
 
 class Parsable(object):

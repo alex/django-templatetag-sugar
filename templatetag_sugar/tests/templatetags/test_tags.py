@@ -1,7 +1,7 @@
 from django import template
 
-from kickass_templatetags.register import tag
-from kickass_templatetags.parser import Name, Variable, Constant, Optional, Model
+from templatetag_sugar.register import tag
+from templatetag_sugar.parser import Name, Variable, Constant, Optional, Model
 
 register = template.Library()
 

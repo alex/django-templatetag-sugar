@@ -1,4 +1,4 @@
-from kickass_templatetags.parser import Parser
+from templatetag_sugar.parser import Parser
 
 
 def tag(register, syntax, name=None):

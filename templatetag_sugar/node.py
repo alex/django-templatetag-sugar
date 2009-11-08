@@ -1,7 +1,7 @@
 from django.template import Node
 
 
-class KickassNode(Node):
+class SugarNode(Node):
     def __init__(self, pieces, function):
         self.pieces = pieces
         self.function = function

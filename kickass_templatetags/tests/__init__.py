@@ -1,1 +1,0 @@
-from kickass_templatetags.tests.tests import KickassTestCase

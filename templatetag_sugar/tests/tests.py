@@ -1,10 +1,10 @@
 from django.template import Template, Context
 from django.test import TestCase
 
-from kickass_templatetags.tests.models import Book
+from templatetag_sugar.tests.models import Book
 
 
-class KickassTestCase(TestCase):
+class SugarTestCase(TestCase):
     def test_basic(self):
         tmpl = Template("""{% load test_tags %}{% test_tag_1 for "alex" %}""")
         self.assertEqual(tmpl.render(Context()), "alex")
