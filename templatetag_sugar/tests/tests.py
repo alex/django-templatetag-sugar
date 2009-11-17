@@ -25,3 +25,17 @@ class SugarTestCase(TestCase):
         Book.objects.create(title="Pro Django")
         tmpl = Template("""{% load test_tags %}{% test_tag_2 tests.Book 2 %}""")
         self.assertEqual(tmpl.render(Context()), "[<Book: Pro Django>]")
+
+    def test_variable_as_string(self):
+        tmpl = Template("""{% load test_tags %}{% test_tag_3 "xela alex" %}""")
+        self.assertEqual(tmpl.render(Context()), "xela alex")
+
+    def test_optional(self):
+        tmpl = Template("""{% load test_tags %}{% test_tag_4 width 100 height 200 %}""")
+        self.assertEqual(tmpl.render(Context()), "100, 200")
+
+        tmpl = Template("""{% load test_tags %}{% test_tag_4 width 100 %}""")
+        self.assertEqual(tmpl.render(Context()), "100, None")
+
+        tmpl = Template("""{% load test_tags %}{% test_tag_4 height 100 %}""")
+        self.assertEqual(tmpl.render(Context()), "None, 100")
