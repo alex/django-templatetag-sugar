@@ -17,7 +17,7 @@ class Parser(object):
         # efficient
         bits = deque(token.split_contents())
         # pop the name of the tag off
-        bits.popleft()
+        tag_name = bits.popleft()
         pieces = []
         for part in self.syntax:
             result = part.parse(parser, bits)
@@ -25,7 +25,11 @@ class Parser(object):
                 continue
             pieces.extend(result)
         if bits:
-            raise TemplateSyntaxError("You didn't eat all the bits")
+            raise TemplateSyntaxError("%s has the following syntax: {%% %s %s %%}" % (
+                tag_name,
+                tag_name,
+                " ".join(part.syntax() for part in self.syntax),
+            ))
         return SugarNode(pieces, self.function)
 
 
@@ -36,10 +40,18 @@ class Parsable(object):
 class NamedParsable(Parsable):
     def __init__(self, name=None):
         self.name = name
+    
+    def syntax(self):
+        if self.name:
+            return "<%s>" % name
+        return "<arg>"
 
 class Constant(Parsable):
     def __init__(self, text):
         self.text = text
+
+    def syntax(self):
+        return self.text
     
     def parse(self, parser, bits):
         if not bits:
@@ -48,7 +60,7 @@ class Constant(Parsable):
             bits.popleft()
             return None
         raise TemplateSyntaxError("%s expected, %s found" % (self.text, bits[0]))
-
+    
 
 class Variable(NamedParsable):
     def parse(self, parser, bits):
@@ -66,15 +78,18 @@ class Name(NamedParsable):
 
 
 class Optional(Parsable):
-    def __init__(self, syntax):
-        self.syntax = syntax
+    def __init__(self, parts):
+        self.parts = parts
+    
+    def syntax(self):
+        return "[%s]" % (" ".join(part.syntax() for part in self.parts))
     
     def parse(self, parser, bits):
         result = []
         # we make a copy so that if part way through the optional part it
         # doesn't match no changes are made
         bits_copy = copy(bits)
-        for part in self.syntax:
+        for part in self.parts:
             try:
                 val = part.parse(parser, bits_copy)
                 if val is None:

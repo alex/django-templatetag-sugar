@@ -5,23 +5,48 @@ from templatetag_sugar.tests.models import Book
 
 
 class SugarTestCase(TestCase):
-    def test_basic(self):
-        tmpl = Template("""{% load test_tags %}{% test_tag_1 for "alex" %}""")
-        self.assertEqual(tmpl.render(Context()), "alex")
-        
-        tmpl = Template("""{% load test_tags %}{% test_tag_1 for "brian" as name %}""")
-        context = Context()
-        tmpl.render(context)
-        self.assertEqual(context["name"], "brian")
-        
-        tmpl = Template("""{% load test_tags %}{% test_tag_1 for variable %}""")
-        context = Context({"variable": [1, 2, 3]})
-        self.assertEqual(tmpl.render(context), "[1, 2, 3]")
-        
-        self.assertRaises(TemplateSyntaxError, Template,
-            """{% load test_tags %}{% test_tag_1 for "jesse" as %}""")
+    def assert_renders(self, tmpl, context, value):
+        tmpl = Template(tmpl)
+        self.assertEqual(tmpl.render(context), value)
     
+    def test_basic(self):
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_1 for "alex" %}""",
+            Context(),
+            "alex"
+        )
+        
+        c = Context()
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_1 for "brian" as name %}""",
+            c,
+            ""
+        )
+        self.assertEqual(c["name"], "brian")
+        
+        
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_1 for variable %}""",
+            Context({"variable": [1, 2, 3]}),
+            "[1, 2, 3]",
+        )
+        
     def test_model(self):
         Book.objects.create(title="Pro Django")
-        tmpl = Template("""{% load test_tags %}{% test_tag_2 tests.Book 2 %}""")
-        self.assertEqual(tmpl.render(Context()), "[<Book: Pro Django>]")
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_2 tests.Book 2 %}""",
+            Context(),
+            "[<Book: Pro Django>]"
+        )
+    
+    def test_errors(self):
+        try:
+            Template("""{% load test_tags %}{% test_tag_1 for "jesse" as %}""")
+        except TemplateSyntaxError, e:
+            self.assertTrue(
+                str(e).endswith(
+                    "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
+                )
+            )
+        else:
+            self.fail("Didn't raise")
