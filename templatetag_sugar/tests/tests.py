@@ -50,3 +50,29 @@ class SugarTestCase(TestCase):
             )
         else:
             self.fail("Didn't raise")
+
+    def test_variable_as_string(self):
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_3 "xela alex" %}""",
+            Context(),
+            "xela alex",
+        )
+
+    def test_optional(self):
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_4 width 100 height 200 %}""",
+            Context(),
+            "100, 200",
+        )
+        
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_4 width 100 %}""",
+            Context(),
+            "100, None"
+        )
+        
+        self.assert_renders(
+            """{% load test_tags %}{% test_tag_4 height 100 %}""",
+            Context(),
+            "None, 100",
+        )
