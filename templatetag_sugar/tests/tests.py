@@ -9,6 +9,18 @@ class SugarTestCase(TestCase):
         tmpl = Template(tmpl)
         self.assertEqual(tmpl.render(context), value)
     
+    def assert_syntax_error(self, tmpl, error):
+        try:
+            Template(tmpl)
+        except TemplateSyntaxError, e:
+            self.assertTrue(
+                str(e).endswith(error),
+                "%s didn't end with %s" % (str(e), error)
+            )
+        else:
+            self.fail("Didn't raise")
+    
+    
     def test_basic(self):
         self.assert_renders(
             """{% load test_tags %}{% test_tag_1 for "alex" %}""",
@@ -40,16 +52,15 @@ class SugarTestCase(TestCase):
         )
     
     def test_errors(self):
-        try:
-            Template("""{% load test_tags %}{% test_tag_1 for "jesse" as %}""")
-        except TemplateSyntaxError, e:
-            self.assertTrue(
-                str(e).endswith(
-                    "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
-                )
-            )
-        else:
-            self.fail("Didn't raise")
+        self.assert_syntax_error(
+            """{% load test_tags %}{% test_tag_1 for "jesse" as %}""",
+            "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
+        )
+        
+        self.assert_syntax_error(
+            """{% load test_tags %}{% test_tag_4 width %}""",
+            "test_tag_4 has the following syntax: {% test_tag_4 [width <width>] [height <height>] %}"
+        )
 
     def test_variable_as_string(self):
         self.assert_renders(

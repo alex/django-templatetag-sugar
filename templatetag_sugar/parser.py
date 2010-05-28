@@ -43,7 +43,7 @@ class NamedParsable(Parsable):
     
     def syntax(self):
         if self.name:
-            return "<%s>" % name
+            return "<%s>" % self.name
         return "<arg>"
 
 class Constant(Parsable):
