@@ -87,3 +87,8 @@ class SugarTestCase(TestCase):
             Context(),
             "None, 100",
         )
+        
+        self.assert_syntax_error(
+            """{% load test_tags %}{% test_tag_1 %}""",
+            "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
+        )

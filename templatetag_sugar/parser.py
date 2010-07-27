@@ -19,12 +19,17 @@ class Parser(object):
         # pop the name of the tag off
         tag_name = bits.popleft()
         pieces = []
+        error = False
         for part in self.syntax:
-            result = part.parse(parser, bits)
+            try:
+                result = part.parse(parser, bits)
+            except TemplateSyntaxError:
+                error = True
+                break
             if result is None:
                 continue
             pieces.extend(result)
-        if bits:
+        if bits or error:
             raise TemplateSyntaxError("%s has the following syntax: {%% %s %s %%}" % (
                 tag_name,
                 tag_name,
@@ -59,7 +64,7 @@ class Constant(Parsable):
         if bits[0] == self.text:
             bits.popleft()
             return None
-        raise TemplateSyntaxError("%s expected, %s found" % (self.text, bits[0]))
+        raise TemplateSyntaxError
     
 
 class Variable(NamedParsable):
