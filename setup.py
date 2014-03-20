@@ -7,7 +7,7 @@ setup(
     author = "Alex Gaynor",
     author_email = "alex.gaynor@gmail.com",
     description = "A library to make Django's template tags sweet.",
-    long_description = open("README").read(),
+    long_description = open("README.rst").read(),
     license = "BSD",
     url = "http://github.com/alex/django-templatetag-sugar/",
     packages = [
