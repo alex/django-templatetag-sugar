@@ -20,7 +20,6 @@ class SugarTestCase(TestCase):
         else:
             self.fail("Didn't raise")
 
-
     def test_basic(self):
         self.assert_renders(
             """{% load test_tags %}{% test_tag_1 for "alex" %}""",
@@ -35,7 +34,6 @@ class SugarTestCase(TestCase):
             ""
         )
         self.assertEqual(c["name"], "brian")
-
 
         self.assert_renders(
             """{% load test_tags %}{% test_tag_1 for variable %}""",
@@ -54,12 +52,14 @@ class SugarTestCase(TestCase):
     def test_errors(self):
         self.assert_syntax_error(
             """{% load test_tags %}{% test_tag_1 for "jesse" as %}""",
-            "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
+            "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as "
+            "<arg>] %}"
         )
 
         self.assert_syntax_error(
             """{% load test_tags %}{% test_tag_4 width %}""",
-            "test_tag_4 has the following syntax: {% test_tag_4 [width <width>] [height <height>] %}"
+            "test_tag_4 has the following syntax: {% test_tag_4 [width <width>"
+            "] [height <height>] %}"
         )
 
     def test_variable_as_string(self):
@@ -90,5 +90,6 @@ class SugarTestCase(TestCase):
 
         self.assert_syntax_error(
             """{% load test_tags %}{% test_tag_1 %}""",
-            "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
+            "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as "
+            "<arg>] %}"
         )

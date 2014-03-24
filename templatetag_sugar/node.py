@@ -5,7 +5,7 @@ class SugarNode(Node):
     def __init__(self, pieces, function):
         self.pieces = pieces
         self.function = function
-    
+
     def render(self, context):
         args = []
         kwargs = {}
@@ -15,5 +15,5 @@ class SugarNode(Node):
                 args.append(value)
             else:
                 kwargs[name] = value
-        
+
         return self.function(context, *args, **kwargs)

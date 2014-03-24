@@ -11,9 +11,9 @@ class Parser(object):
     def __init__(self, syntax, function):
         self.syntax = syntax
         self.function = function
-    
+
     def __call__(self, parser, token):
-        # we're going to be doing pop(0) a bit, so a deque is way more 
+        # we're going to be doing pop(0) a bit, so a deque is way more
         # efficient
         bits = deque(token.split_contents())
         # pop the name of the tag off
@@ -30,11 +30,13 @@ class Parser(object):
                 continue
             pieces.extend(result)
         if bits or error:
-            raise TemplateSyntaxError("%s has the following syntax: {%% %s %s %%}" % (
-                tag_name,
-                tag_name,
-                " ".join(part.syntax() for part in self.syntax),
-            ))
+            raise TemplateSyntaxError(
+                "%s has the following syntax: {%% %s %s %%}" % (
+                    tag_name,
+                    tag_name,
+                    " ".join(part.syntax() for part in self.syntax),
+                )
+            )
         return SugarNode(pieces, self.function)
 
 
@@ -42,14 +44,16 @@ class Parsable(object):
     def resolve(self, context, value):
         return value
 
+
 class NamedParsable(Parsable):
     def __init__(self, name=None):
         self.name = name
-    
+
     def syntax(self):
         if self.name:
             return "<%s>" % self.name
         return "<arg>"
+
 
 class Constant(Parsable):
     def __init__(self, text):
@@ -57,7 +61,7 @@ class Constant(Parsable):
 
     def syntax(self):
         return self.text
-    
+
     def parse(self, parser, bits):
         if not bits:
             raise TemplateSyntaxError
@@ -65,16 +69,17 @@ class Constant(Parsable):
             bits.popleft()
             return None
         raise TemplateSyntaxError
-    
+
 
 class Variable(NamedParsable):
     def parse(self, parser, bits):
         bit = bits.popleft()
         val = parser.compile_filter(bit)
         return [(self, self.name, val)]
-    
+
     def resolve(self, context, value):
         return value.resolve(context)
+
 
 class Name(NamedParsable):
     def parse(self, parser, bits):
@@ -85,10 +90,10 @@ class Name(NamedParsable):
 class Optional(Parsable):
     def __init__(self, parts):
         self.parts = parts
-    
+
     def syntax(self):
         return "[%s]" % (" ".join(part.syntax() for part in self.parts))
-    
+
     def parse(self, parser, bits):
         result = []
         # we make a copy so that if part way through the optional part it
