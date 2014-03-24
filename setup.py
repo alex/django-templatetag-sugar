@@ -1,20 +1,22 @@
 from setuptools import setup
 
 
+with open("README.rst") as f:
+    long_description = f.read()
+
 setup(
     name="django-templatetag-sugar",
     version=__import__("templatetag_sugar").__version__,
     author="Alex Gaynor",
     author_email="alex.gaynor@gmail.com",
     description="A library to make Django's template tags sweet.",
-    long_description=open("README.rst").read(),
+    long_description=long_description,
     license="BSD",
     url="http://github.com/alex/django-templatetag-sugar/",
     packages=[
         "templatetag_sugar",
     ],
     classifiers=[
-        "Development Status :: 3 - Alpha",
         "Environment :: Web Environment",
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",
