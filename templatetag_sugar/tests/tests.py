@@ -8,7 +8,7 @@ class SugarTestCase(TestCase):
     def assert_renders(self, tmpl, context, value):
         tmpl = Template(tmpl)
         self.assertEqual(tmpl.render(context), value)
-    
+
     def assert_syntax_error(self, tmpl, error):
         try:
             Template(tmpl)
@@ -19,15 +19,15 @@ class SugarTestCase(TestCase):
             )
         else:
             self.fail("Didn't raise")
-    
-    
+
+
     def test_basic(self):
         self.assert_renders(
             """{% load test_tags %}{% test_tag_1 for "alex" %}""",
             Context(),
             "alex"
         )
-        
+
         c = Context()
         self.assert_renders(
             """{% load test_tags %}{% test_tag_1 for "brian" as name %}""",
@@ -35,14 +35,14 @@ class SugarTestCase(TestCase):
             ""
         )
         self.assertEqual(c["name"], "brian")
-        
-        
+
+
         self.assert_renders(
             """{% load test_tags %}{% test_tag_1 for variable %}""",
             Context({"variable": [1, 2, 3]}),
             "[1, 2, 3]",
         )
-        
+
     def test_model(self):
         Book.objects.create(title="Pro Django")
         self.assert_renders(
@@ -50,13 +50,13 @@ class SugarTestCase(TestCase):
             Context(),
             "[<Book: Pro Django>]"
         )
-    
+
     def test_errors(self):
         self.assert_syntax_error(
             """{% load test_tags %}{% test_tag_1 for "jesse" as %}""",
             "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
         )
-        
+
         self.assert_syntax_error(
             """{% load test_tags %}{% test_tag_4 width %}""",
             "test_tag_4 has the following syntax: {% test_tag_4 [width <width>] [height <height>] %}"
@@ -75,19 +75,19 @@ class SugarTestCase(TestCase):
             Context(),
             "100, 200",
         )
-        
+
         self.assert_renders(
             """{% load test_tags %}{% test_tag_4 width 100 %}""",
             Context(),
             "100, None"
         )
-        
+
         self.assert_renders(
             """{% load test_tags %}{% test_tag_4 height 100 %}""",
             Context(),
             "None, 100",
         )
-        
+
         self.assert_syntax_error(
             """{% load test_tags %}{% test_tag_1 %}""",
             "test_tag_1 has the following syntax: {% test_tag_1 for <arg> [as <arg>] %}"
