@@ -12,7 +12,7 @@ class SugarTestCase(TestCase):
     def assert_syntax_error(self, tmpl, error):
         try:
             Template(tmpl)
-        except TemplateSyntaxError, e:
+        except TemplateSyntaxError as e:
             self.assertTrue(
                 str(e).endswith(error),
                 "%s didn't end with %s" % (str(e), error)

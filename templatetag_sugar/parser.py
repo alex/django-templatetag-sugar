@@ -109,7 +109,7 @@ class Optional(Parsable):
                 return None
         # however many bits we popped off our copy pop off the real one
         diff = len(bits) - len(bits_copy)
-        for _ in xrange(diff):
+        for _ in range(diff):
             bits.popleft()
         return result
 

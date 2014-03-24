@@ -1,3 +1,5 @@
+import sys
+
 from django import template
 
 from templatetag_sugar.register import tag
@@ -24,7 +26,10 @@ def test_tag_2(context, model, limit, asvar=None):
     if asvar:
         context[asvar] = objs
         return ""
-    return unicode(objs)
+    if sys.version_info[0] == 2:
+        return unicode(objs)
+    else:
+        return str(objs)
 
 
 @tag(register, [Variable()])
