@@ -3,7 +3,9 @@ django-templatetag-sugar
 
 A library to make writing templatetags in Django sweet.
 
-Here's an example of using::
+Here's an example of using:
+
+.. code-block:: python
 
     from django import template
 
